@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS last_calculation (
+  id SERIAL PRIMARY KEY,
+  result JSONB NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
