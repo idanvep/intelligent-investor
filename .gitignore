@@ -8,6 +8,7 @@ npm-debug.log*
 # Environment variables / secrets
 .env
 .env.*
+!.env.example
 
 # Docker / database local data
 postgres_data/

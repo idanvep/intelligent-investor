@@ -51,6 +51,8 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Create CI environment file
+        run: cp .env.example .env
       # -------------------------
       # Start and test full system
       # -------------------------
