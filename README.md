@@ -36,6 +36,11 @@ Backend - Node.js / Express API
   v
 Database - PostgreSQL 15
 ```
+The following diagram presents the application architecture, CI/CD pipeline,
+Docker Compose environment, and Kubernetes deployment.
+
+![Intelligent Investor System Architecture](docs/architecture-diagram.png)
+
 
 ### Services
 
