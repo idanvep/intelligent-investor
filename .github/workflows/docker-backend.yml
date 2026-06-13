@@ -25,7 +25,7 @@ jobs:
       - name: Install backend dependencies
         run: cd backend && npm ci
       
-            - name: Install E2E dependencies
+      - name: Install E2E dependencies
         run: npm ci
 
       - name: Install Playwright Chromium
