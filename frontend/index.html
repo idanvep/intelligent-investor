@@ -70,7 +70,7 @@
                 name="salary"
                 type="number"
                 min="1"
-                step="100"
+                step="1"
                 value="10000"
                 required
               />
@@ -91,7 +91,7 @@
                 name="bankNet"
                 type="number"
                 min="1"
-                step="100"
+                step="1"
                 placeholder="Calculated automatically"
               />
             </div>
@@ -114,6 +114,49 @@
           <p id="form-message" class="form-message"></p>
         </form>
 
+        <section class="profiles-box">
+  <div class="profiles-heading">
+    <div>
+      <span class="section-label">Saved profiles</span>
+      <h4>Financial plans</h4>
+    </div>
+
+    <button
+      id="refresh-profiles-button"
+      class="secondary-button compact-button"
+      type="button"
+    >
+      Refresh
+    </button>
+  </div>
+
+  <label class="profile-label" for="profile-name">
+    Profile name
+  </label>
+
+  <input
+    id="profile-name"
+    class="profile-name-input"
+    type="text"
+    maxlength="100"
+    placeholder="For example: My 2026 Plan"
+  />
+
+  <button
+    id="save-profile-button"
+    type="button"
+    disabled
+  >
+    Save current plan
+  </button>
+
+  <p id="profile-message" class="profile-message"></p>
+
+  <div id="profiles-list" class="profiles-list">
+    <p class="profiles-empty">No saved profiles yet.</p>
+  </div>
+</section>
+        
         <div class="allocation-guide">
           <h4>Allocation model</h4>
 

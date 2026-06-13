@@ -3,8 +3,23 @@ const calculateButton = document.getElementById('calculate-button');
 const formMessage = document.getElementById('form-message');
 const resultsSection = document.getElementById('results-section');
 const emptyState = document.getElementById('empty-state');
+const profileNameInput =
+  document.getElementById('profile-name');
+
+const saveProfileButton =
+  document.getElementById('save-profile-button');
+
+const refreshProfilesButton =
+  document.getElementById('refresh-profiles-button');
+
+const profilesList =
+  document.getElementById('profiles-list');
+
+const profileMessage =
+  document.getElementById('profile-message');
 
 let latestProjection = [];
+let latestPlan = null;
 
 const currencyFormatter = new Intl.NumberFormat('he-IL', {
   style: 'currency',
@@ -48,6 +63,14 @@ function renderResults(data, years) {
   setText('guilt-free', formatCurrency(data.guiltFreeSpending));
 
   latestProjection = data.wealthProjection;
+  
+  latestPlan = {
+    grossSalary: Number(data.grossSalary),
+    bankNet: Number(data.bankNet),
+    years: Number(years),
+  };
+
+  saveProfileButton.disabled = false;
 
   emptyState.classList.add('hidden');
   resultsSection.classList.remove('hidden');
@@ -240,6 +263,192 @@ function compactCurrency(value) {
 
   return `₪${Math.round(number)}`;
 }
+function showProfileMessage(message, type = 'success') {
+  profileMessage.textContent = message;
+  profileMessage.className = `profile-message ${type}`;
+}
+
+function clearProfileMessage() {
+  profileMessage.textContent = '';
+  profileMessage.className = 'profile-message';
+}
+
+async function saveCurrentProfile() {
+  clearProfileMessage();
+
+  if (!latestPlan) {
+    showProfileMessage(
+      'Calculate a financial plan before saving.',
+      'error'
+    );
+    return;
+  }
+
+  const profileName = profileNameInput.value.trim();
+
+  if (!profileName) {
+    showProfileMessage(
+      'Please enter a profile name.',
+      'error'
+    );
+    return;
+  }
+
+  saveProfileButton.disabled = true;
+  saveProfileButton.textContent = 'Saving...';
+
+  try {
+    const response = await fetch(
+      'http://localhost:3001/profiles',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          profileName,
+          grossSalary: latestPlan.grossSalary,
+          bankNet: latestPlan.bankNet,
+          years: latestPlan.years,
+        }),
+      }
+    );
+
+    const profile = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        profile.error || 'Could not save the profile.'
+      );
+    }
+
+    showProfileMessage(
+      `Profile "${profile.profileName}" was saved.`
+    );
+
+    profileNameInput.value = '';
+
+    await loadProfiles();
+  } catch (error) {
+    showProfileMessage(error.message, 'error');
+  } finally {
+    saveProfileButton.disabled = !latestPlan;
+    saveProfileButton.textContent = 'Save current plan';
+  }
+}
+
+async function loadProfiles() {
+  refreshProfilesButton.disabled = true;
+
+  try {
+    const response = await fetch(
+      'http://localhost:3001/profiles'
+    );
+
+    const profiles = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        profiles.error || 'Could not load profiles.'
+      );
+    }
+
+    renderProfiles(profiles);
+  } catch (error) {
+    profilesList.innerHTML = '';
+
+    const message = document.createElement('p');
+    message.className = 'profiles-empty';
+    message.textContent = error.message;
+
+    profilesList.appendChild(message);
+  } finally {
+    refreshProfilesButton.disabled = false;
+  }
+}
+
+function renderProfiles(profiles) {
+  profilesList.innerHTML = '';
+
+  if (!profiles.length) {
+    const message = document.createElement('p');
+    message.className = 'profiles-empty';
+    message.textContent = 'No saved profiles yet.';
+
+    profilesList.appendChild(message);
+    return;
+  }
+
+  profiles.forEach((profile) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'saved-profile-button';
+
+    const info = document.createElement('span');
+    info.className = 'saved-profile-info';
+
+    const name = document.createElement('span');
+    name.className = 'saved-profile-name';
+    name.textContent = profile.profileName;
+
+    const details = document.createElement('span');
+    details.className = 'saved-profile-details';
+    details.textContent =
+      `${profile.years} years · ` +
+      `${formatCurrency(profile.result.bankNet)} net`;
+
+    const id = document.createElement('span');
+    id.className = 'saved-profile-id';
+    id.textContent = `#${profile.id}`;
+
+    info.appendChild(name);
+    info.appendChild(details);
+
+    button.appendChild(info);
+    button.appendChild(id);
+
+    button.addEventListener('click', () => {
+      loadProfile(profile.id);
+    });
+
+    profilesList.appendChild(button);
+  });
+}
+
+async function loadProfile(profileId) {
+  clearProfileMessage();
+
+  try {
+    const response = await fetch(
+      `http://localhost:3001/profiles/${profileId}`
+    );
+
+    const profile = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        profile.error || 'Could not load the profile.'
+      );
+    }
+
+    document.getElementById('salary').value =
+      profile.result.grossSalary;
+
+    document.getElementById('bank-net').value =
+      profile.result.bankNet;
+
+    document.getElementById('years').value =
+      profile.years;
+
+    renderResults(profile.result, profile.years);
+
+    showProfileMessage(
+      `Profile "${profile.profileName}" was loaded.`
+    );
+  } catch (error) {
+    showProfileMessage(error.message, 'error');
+  }
+}
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -317,3 +526,15 @@ window.addEventListener('resize', () => {
     drawWealthChart(latestProjection);
   }
 });
+
+saveProfileButton.addEventListener(
+  'click',
+  saveCurrentProfile
+);
+
+refreshProfilesButton.addEventListener(
+  'click',
+  loadProfiles
+);
+
+loadProfiles();

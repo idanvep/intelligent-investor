@@ -546,3 +546,130 @@ footer {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+.profiles-box {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+.profiles-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.profiles-heading h4 {
+  margin: 0;
+}
+
+.secondary-button {
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  background: transparent;
+}
+
+.secondary-button:hover {
+  color: white;
+  background: var(--primary);
+}
+
+.compact-button {
+  width: auto;
+  padding: 9px 13px;
+  font-size: 12px;
+}
+
+.profile-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.profile-name-input {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+}
+
+.profile-name-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(21, 122, 110, 0.1);
+}
+
+.profile-message {
+  min-height: 20px;
+  margin: 11px 0;
+  font-size: 13px;
+}
+
+.profile-message.success {
+  color: #16845c;
+}
+
+.profile-message.error {
+  color: var(--danger);
+}
+
+.profiles-list {
+  display: grid;
+  gap: 9px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.profiles-empty {
+  margin: 5px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.saved-profile-button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  color: var(--text);
+  text-align: left;
+  border: 1px solid var(--border);
+  background: #fbfdfc;
+}
+
+.saved-profile-button:hover {
+  color: var(--text);
+  border-color: var(--primary);
+  background: var(--primary-light);
+  transform: none;
+}
+
+.saved-profile-info {
+  min-width: 0;
+}
+
+.saved-profile-name {
+  display: block;
+  overflow: hidden;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-profile-details {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.saved-profile-id {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+}
