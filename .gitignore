@@ -18,3 +18,8 @@ Thumbs.db
 
 # IDE files
 .vscode/
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
