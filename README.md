@@ -436,6 +436,53 @@ In CI/CD, Docker Hub credentials are stored securely as GitHub repository secret
 
 ---
 
+## Kubernetes Deployment
+
+The project can also run inside a local Kubernetes cluster using kind.
+
+The Kubernetes configuration is stored in:
+
+```text
+k8s/
+├── cluster-config.yaml
+├── backend-config.yaml
+├── backend.yaml
+└── postgres.yaml
+
+kind create cluster --config k8s/cluster-config.yaml
+
+docker build -t ii-backend:k8s ./backend
+kind load docker-image ii-backend:k8s --name intelligent-investor
+
+kubectl create secret generic ii-db-secret \
+  --from-literal=DB_PASSWORD=postgres
+
+  kubectl apply -f k8s/backend-config.yaml
+kubectl apply -f k8s/postgres.yaml
+kubectl apply -f k8s/backend.yaml
+
+kubectl get nodes
+kubectl get pods
+kubectl get services
+kubectl get pvc
+
+kubectl port-forward service/ii-backend-service 3002:5000
+
+http://localhost:3002/health
+
+
+ה־Deployment, Service, ConfigMap, Secret, probes, scaling ו־rollback תואמים לנושאים שנבנו ב־Kubernetes Workshop. :contentReference[oaicite:0]{index=0}
+
+---
+
+## 3. בדיקה לפני commit
+
+```powershell
+git branch --show-current
+git status
+
+
+
 ## Project Status
 
 Completed:
