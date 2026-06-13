@@ -6,7 +6,8 @@ on:
       - main
       - dev
       - stage
-      - feature/**
+      - "feature/**"
+  workflow_dispatch:
 
 jobs:
   build-test-push:
@@ -19,7 +20,7 @@ jobs:
       - name: Setup Node.js 18
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install backend dependencies
         run: cd backend && npm ci
@@ -30,13 +31,13 @@ jobs:
       - name: Run integration tests
         run: cd backend && npm run test:integration
 
-            - name: Smoke test with Docker Compose
+      - name: Smoke test with Docker Compose
         run: |
           docker compose up -d --build db backend
 
           echo "Waiting for backend and database..."
 
-          for i in {1..30}; do
+          for i in $(seq 1 30); do
             if curl -fsS http://localhost:3001/health; then
               echo "Health check passed"
               exit 0
