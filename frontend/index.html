@@ -1,21 +1,240 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
   <title>Intelligent Investor</title>
+
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <h1>Intelligent Investor</h1>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">II</div>
 
-  <label>Gross Salary (₪):</label>
-  <input id="salary" type="number" value="10000" />
+      <div>
+        <h1>Intelligent Investor</h1>
+        <p>Personal finance planning dashboard</p>
+      </div>
+    </div>
 
-  <label>Years:</label>
-  <input id="years" type="number" value="10" />
+    <div class="system-status">
+      <span class="status-dot"></span>
+      Local Environment
+    </div>
+  </header>
 
-  <button onclick="calculate()">Calculate</button>
+  <main class="page-container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Financial Planning Platform</span>
 
-  <pre id="output"></pre>
+        <h2>Turn your monthly income into a clear financial plan.</h2>
+
+        <p>
+          Calculate your estimated bank net, divide it into financial
+          buckets, and view your long-term investment projection.
+        </p>
+      </div>
+
+      <div class="hero-stat">
+        <span>Projected annual return</span>
+        <strong>7%</strong>
+        <small>Compounded through monthly investments</small>
+      </div>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="panel calculator-panel">
+        <div class="panel-header">
+          <div>
+            <span class="section-label">Calculator</span>
+            <h3>Create your financial plan</h3>
+          </div>
+        </div>
+
+        <form id="calculator-form">
+          <div class="form-group">
+            <label for="salary">Gross monthly salary</label>
+
+            <div class="input-wrapper">
+              <span>₪</span>
+
+              <input
+                id="salary"
+                name="salary"
+                type="number"
+                min="1"
+                step="100"
+                value="10000"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="bank-net">
+              Bank net
+              <small>Optional override</small>
+            </label>
+
+            <div class="input-wrapper">
+              <span>₪</span>
+
+              <input
+                id="bank-net"
+                name="bankNet"
+                type="number"
+                min="1"
+                step="100"
+                placeholder="Calculated automatically"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="years">Projection period</label>
+
+            <select id="years" name="years">
+              <option value="5">5 years</option>
+              <option value="10">10 years</option>
+              <option value="15" selected>15 years</option>
+            </select>
+          </div>
+
+          <button id="calculate-button" type="submit">
+            Calculate financial plan
+          </button>
+
+          <p id="form-message" class="form-message"></p>
+        </form>
+
+        <div class="allocation-guide">
+          <h4>Allocation model</h4>
+
+          <div class="guide-row">
+            <span>Fixed Costs</span>
+            <strong>52.5%</strong>
+          </div>
+
+          <div class="guide-row">
+            <span>Savings Goals</span>
+            <strong>10%</strong>
+          </div>
+
+          <div class="guide-row">
+            <span>Active Investments</span>
+            <strong>10%</strong>
+          </div>
+
+          <div class="guide-row">
+            <span>Guilt-Free Spending</span>
+            <strong>27.5%</strong>
+          </div>
+        </div>
+      </article>
+
+      <section id="results-section" class="results-section hidden">
+        <div class="summary-row">
+          <article class="summary-card primary-card">
+            <span>Estimated bank net</span>
+            <strong id="result-bank-net">₪0</strong>
+            <small>Monthly income after estimated taxes</small>
+          </article>
+
+          <article class="summary-card">
+            <span>Monthly investment</span>
+            <strong id="result-investment">₪0</strong>
+            <small>Allocated to active investments</small>
+          </article>
+
+          <article class="summary-card">
+            <span>Final projected wealth</span>
+            <strong id="result-final-wealth">₪0</strong>
+            <small id="result-period">After 15 years</small>
+          </article>
+        </div>
+
+        <article class="panel buckets-panel">
+          <div class="panel-header">
+            <div>
+              <span class="section-label">Monthly allocation</span>
+              <h3>Your four financial buckets</h3>
+            </div>
+          </div>
+
+          <div class="bucket-grid">
+            <div class="bucket-card">
+              <div class="bucket-icon">FC</div>
+              <span>Fixed Costs</span>
+              <strong id="fixed-costs">₪0</strong>
+              <small>52.5% of bank net</small>
+            </div>
+
+            <div class="bucket-card">
+              <div class="bucket-icon">SG</div>
+              <span>Savings Goals</span>
+              <strong id="savings-goals">₪0</strong>
+              <small>10% of bank net</small>
+            </div>
+
+            <div class="bucket-card">
+              <div class="bucket-icon">AI</div>
+              <span>Active Investments</span>
+              <strong id="active-investments">₪0</strong>
+              <small>10% of bank net</small>
+            </div>
+
+            <div class="bucket-card">
+              <div class="bucket-icon">GF</div>
+              <span>Guilt-Free Spending</span>
+              <strong id="guilt-free">₪0</strong>
+              <small>27.5% of bank net</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="panel-header chart-header">
+            <div>
+              <span class="section-label">Wealth projection</span>
+              <h3>Investment growth over time</h3>
+            </div>
+
+            <div class="chart-legend">
+              <span class="legend-dot"></span>
+              Projected value
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="wealth-chart"></canvas>
+          </div>
+
+          <div id="projection-table" class="projection-table"></div>
+        </article>
+      </section>
+
+      <section id="empty-state" class="empty-state">
+        <div class="empty-icon">↗</div>
+        <h3>Your dashboard is ready</h3>
+
+        <p>
+          Enter your salary and choose a projection period to generate
+          your personal financial plan.
+        </p>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    Intelligent Investor Platform · DevOps Course Project
+  </footer>
 
   <script src="app.js"></script>
 </body>
