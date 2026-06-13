@@ -3,3 +3,11 @@ CREATE TABLE IF NOT EXISTS last_calculation (
   result JSONB NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS profiles (
+  id SERIAL PRIMARY KEY,
+  profile_name VARCHAR(100) NOT NULL,
+  years INTEGER NOT NULL CHECK (years BETWEEN 1 AND 15),
+  result JSONB NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);

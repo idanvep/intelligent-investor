@@ -8,6 +8,7 @@ app.use(express.json());
 
 app.use('/health', require('./routes/health'));
 app.use('/calculate', require('./routes/calculate'));
+app.use('/profiles', require('./routes/profiles'));
 
 module.exports = app;
 
