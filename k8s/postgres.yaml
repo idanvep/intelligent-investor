@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ii-postgres-init
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS last_calculation (
+      id SERIAL PRIMARY KEY,
+      result JSONB NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS profiles (
+      id SERIAL PRIMARY KEY,
+      profile_name VARCHAR(100) NOT NULL,
+      years INTEGER NOT NULL CHECK (years BETWEEN 1 AND 15),
+      result JSONB NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ii-postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ii-postgres
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: ii-postgres
+
+  template:
+    metadata:
+      labels:
+        app: ii-postgres
+
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+
+          ports:
+            - containerPort: 5432
+
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ii-db-secret
+                  key: DB_PASSWORD
+
+            - name: POSTGRES_DB
+              value: investor_db
+
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U postgres -d investor_db
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U postgres -d investor_db
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+
+            - name: postgres-init
+              mountPath: /docker-entrypoint-initdb.d/init.sql
+              subPath: init.sql
+
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: ii-postgres-pvc
+
+        - name: postgres-init
+          configMap:
+            name: ii-postgres-init
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  type: ClusterIP
+
+  selector:
+    app: ii-postgres
+
+  ports:
+    - port: 5432
+      targetPort: 5432
